@@ -2,6 +2,8 @@
 # license: GPLv3
 from enemies import *
 from hero import *
+from datetime import datetime
+from time import sleep
 
 def annoying_input_int(message =''):
     answer = None
@@ -15,20 +17,25 @@ def annoying_input_int(message =''):
 
 def game_tournament(hero, dragon_list):
     for dragon in dragon_list:
+        print("\033[H\033[J")
         print('Вышел', dragon._color, 'дракон!')
+        start_dragon_time = datetime.now()
         while dragon.is_alive() and hero.is_alive():
             print('Вопрос:', dragon.question())
             answer = annoying_input_int('Ответ:')
 
             if dragon.check_answer(answer):
                 hero.attack(dragon)
-                print('Верно! \n** дракон кричит от боли **')
+                print('Верно! \n** дракон кричит от боли ** \n ** вы оставили дракону {} здоровья **'.format(dragon._health))
             else:
                 dragon.attack(hero)
-                print('Ошибка! \n** вам нанесён удар... **')
+                print('Ошибка! \n** вам нанесён удар... ** \n ** дракон оставил вам {} здоровья **'.format(hero._health))
         if dragon.is_alive():
             break
-        print('Дракон', dragon._color, 'повержен!\n')
+        experience = round(100 / (datetime.now() - start_dragon_time).seconds)
+        print('Дракон', dragon._color, 'повержен! Вам начисленно {} опыта\n'.format(experience))
+        hero.add_experience(experience)
+        sleep(3)
 
     if hero.is_alive():
         print('Поздравляем! Вы победили!')
