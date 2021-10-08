@@ -1,31 +1,20 @@
-'''
-1. Создайте класс Vector с полями x, y, z определите для него конструктор,
- метод __str__, необходимые арифметические операции.
- Реализуйте конструктор, который принимает строку в формате "x,y". 
- 
- #. Используя класс Vector выведите координаты центра масс данного
- множества точек. 
- #. Даны два вектора. Выведите площадь параллелограмма, 
- построенного на заданных векторах. 
- #. Даны три вектора. Выведите объём параллелепипеда,
- построенного на заданных векторах. 
- #. Среди данных точек найдите три точки, образующие
- треугольник с наибольшим периметром. Выведите данный периметр. 
- #. Среди данных точек найдите три точки, образующие треугольник с
- наибольшей площадью. Выведите данную площадь.
- '''
-
 class Vector(list):
     def __init__(self, args="0,0,0"):
-         self.x, self.y, self.z = map(int, args.split(','))
+         self.x, self.y, self.z = map(float, args.split(','))
          
     def __str__(self):
         return str((self.x, self.y, self.z))
     
     def __repr__(self):
-        return str((self.x, self.y, self.z))
+        return "Vector" + str((self.x, self.y, self.z))
     
     def __add__(self, other):
+        '''
+        Add 2 Vectors
+        '''
+        return Vector(','.join(map(str, [self.x + other.x, self.y + other.y, self.z + other.z])))
+    
+    def __radd__(self, other):
         '''
         Add 2 Vectors
         '''
@@ -41,9 +30,17 @@ class Vector(list):
         '''
         Multiply by an integer/Scalar Vector multiplication
         '''
-        if type(other) == int:
+        if type(other) in [int, float]:
             return Vector(','.join(map(str, [self.x * other, self.y * other, self.z * other])))
-        return Vector(','.join(map(str, [self.x * other.x, self.y * other.y, self.z * other.z])))
+        return self.x * other.x + self.y * other.y + self.z * other.z
+    
+    def __rmul__(self, other):
+        '''
+        Multiply by an integer/Scalar Vector multiplication
+        '''
+        if type(other) in [int, float]:
+            return Vector(','.join(map(str, [self.x * other, self.y * other, self.z * other])))
+        return self.x * other.x + self.y * other.y + self.z * other.z
     
     def __abs__(self):
         '''
@@ -61,109 +58,114 @@ class Vector(list):
     
     @staticmethod
     def farthest_point(N, coords):
+        '''
+        Return farthest point from origin (0,0,0)
+        '''
         dist = 0
         farthest = "0,0,0"
         for i in range(N):
-            new_dist = abs(Vector(coords[i]))
+            new_dist = Vector(coords[i]).__abs__()
             if new_dist > dist:
                 dist = new_dist
                 farthest = coords[i]
         return Vector(farthest)
     
     @staticmethod
-    def parallelogram(a,b):
+    def center_point(N, arr):
+        '''
+        Return center point of an array of points
+        '''
+        center_point = Vector()
+        for i in arr:
+            center_point = center_point + Vector(i)
+        return center_point * (1/N)
+    
+    @staticmethod
+    def parallelogram(a, b):
+        '''
+        input: str
+        output: float
+        '''
         A = Vector(a)
         B = Vector(b)
         C = A @ B
-        return C
+        return C.__abs__()
 
     @staticmethod
-    def parallelepiped(a,b,c):
+    def parallelepiped(a, b, c):
+        '''
+        input: str
+        output: float
+        '''
         C = Vector(c)
-        D = Vector.parallelogram(a,b)
-        return D*C
+        D = Vector.parallelogram(a,b) #float
+        return (D*C).__abs__()
 
-    @staticmethod
-    def triangle(N , arr):
-        peri_arr = []
-        area_arr = []
-        peri = []
-        area = []
-        for i in range(N - 2):
-            for j in range(i + 1, N - 1):
-                for k in range(j + 1, N):
-                    a = Vector(arr[i])
-                    b = Vector(arr[j])
-                    c = Vector(arr[k])
-                    m = a - b
-                    n = a - c
-                    p = b - c
-                    if m @ n == Vector('0,0,0'):
-                        continue
-                    else:
-                        peri_arr.append([arr[i], arr[j], arr[k]])
-                        area_arr.append([arr[i], arr[j], arr[k]])
-                        peri.append(abs(m) + abs(n) + abs(p))
-                        area.append(1 / 2 * abs(m * n))
-        max_peri = max(peri)
-        print('The 3 vertices that create the triangle with the largest perimeter are: ')
-        for x in peri_arr[peri.index(max_peri)]:
-            print(x)
-        print('The longest perimeter triangle is: ', max_peri)
-        max_area = max(area)
-        print('The 3 vertices that create the triangle with the largest area are: ')
-        for x in peri_arr[area.index(max_area)]:
-            print(x)
-        print('The longest area triangle is: ', max_area)
+    # TODO: 
+        #. Среди данных точек найдите три точки, образующие
+        # треугольник с наибольшим периметром. Выведите данный периметр. 
+        #. Среди данных точек найдите три точки, образующие треугольник с
+        # наибольшей площадью. Выведите данную площадь.
+        
+    # @staticmethod
+    # def triangle(N , arr):
+    #     peri_arr = []
+    #     area_arr = []
+    #     peri = []
+    #     area = []
+    #     for i in range(N - 2):
+    #         for j in range(i + 1, N - 1):
+    #             for k in range(j + 1, N):
+    #                 a = Vector(arr[i])
+    #                 b = Vector(arr[j])
+    #                 c = Vector(arr[k])
+    #                 m = a - b
+    #                 n = a - c
+    #                 p = b - c
+    #                 if m @ n == Vector('0,0,0'):
+    #                     continue
+    #                 else:
+    #                     peri_arr.append([arr[i], arr[j], arr[k]])
+    #                     area_arr.append([arr[i], arr[j], arr[k]])
+    #                     peri.append(abs(m) + abs(n) + abs(p))
+    #                     area.append(1 / 2 * abs(m * n))
+    #     max_peri = max(peri)
+    #     print('The 3 vertices that create the triangle with the largest perimeter are: ')
+    #     for x in peri_arr[peri.index(max_peri)]:
+    #         print(x)
+    #     print('The longest perimeter triangle is: ', max_peri)
+    #     max_area = max(area)
+    #     print('The 3 vertices that create the triangle with the largest area are: ')
+    #     for x in peri_arr[area.index(max_area)]:
+    #         print(x)
+    #     print('The longest area triangle is: ', max_area)
 
-# N = int(input())
-# arr= []
-# center_point = Vector('0,0,0')
-# for i in range(N):
-#     a=input()
-#     arr.append(a)
-#     center_point = center_point + Vector(a)
-# '''
-# farthest point
-# '''
-# print('farthest point is : ',end = ' ')
-# Vector.farthest_point(N,arr)
 
-# '''
-# center point 
-# '''
-# def center(center_point):
-#     return (center_point.x / N, center_point.y / N, center_point.z / N)
-# my_center_point = center(center_point)
-# print('center point is : ',end= ' ')
-# print(my_center_point)
 
-# '''
-# area of parallelogram
-# '''
-# print('enter two vectors :')
-# a = input()
-# b = input()
-# print('area of parallelogram : ',abs(Vector.parallelogram(a,b)))
 
-# '''
-# volume of a parallelepiped
-# '''
-print('enter three vectors :')
-a = input()
-b = input()
-c = input()
-print('area of parallelepiped : ', abs(Vector.parallelepiped(a,b,c)))
+if __name__ == "__main__":    
+    N = int(input("Enter number of vectors: "))
+    arr = []
+    center_point = Vector('0,0,0')
+    for i in range(N):
+        a = input()
+        arr.append(a)
+        
+    print('1) Farthest point from origin is : {}'.format(Vector.farthest_point(N, arr)))
+    print('2) Center point is : {}'.format(Vector.center_point(N, arr)))
 
-"""
-longest perimeter triangle, longest area triangle
-"""
-# Vector.triangle(N,arr)
+    print('Enter two vectors to find area of a parallelogram :')
+    a = input()
+    b = input()
+    print('3) Area of parallelogram is : {}'.format(Vector.parallelogram(a, b)))
     
-   
-# print(Vector.farthest_point(3, ["1,0,0","1,2,1","4,5,6"]))
+    print('Enter three vectors to find volume of a parallelepiped :')
+    a = input()
+    b = input()
+    c = input()
+    print('4) Area of parallelepiped : {}'.format(Vector.parallelepiped(a,b,c)))
 
-
+    # Vector.triangle(N,arr)
 
 
 
