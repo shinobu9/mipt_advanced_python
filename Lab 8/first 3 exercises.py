@@ -11,7 +11,7 @@ def print_map1(function, iterable):
         except StopIteration:
             done_looping = True
         else:
-            function(item)
+            print(function(item))
     
 def function(integer):
     return integer ** 2
@@ -25,7 +25,8 @@ def iter_fib(n):
         n -= 1
 
 a = [1,2,3,4,5]
-#print_map(function, a)
+print_map1(function, a)
 
 for i in iter_fib(5):
-    print(i)
+    pass
+   # print(i)
