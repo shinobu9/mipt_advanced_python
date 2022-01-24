@@ -27,8 +27,4 @@ for url in urls:
     read_url(url)
 print('без: ', time.time() - start)
 
-'''
-c потоками:  40.01757550239563
-без:  188.15056991577148
-'''
 
